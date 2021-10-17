@@ -1,35 +1,13 @@
 name: Deploy to Deta
-
-on:
-  release:
-    types: [published]
+on: push
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.9'
-    - name: Install dependencies and deta-cli
-      run: |
-        ls
-        python -m pip install --upgrade pip
-        pip install setuptools wheel poetry attrs codecov
-        poetry config virtualenvs.create false --local && poetry install --no-ansi -n
-        curl -fsSL https://get.deta.dev/cli.sh | sh
-    - name: Clone Deta Metadata
-      shell: bash
-      run: |
-        env DETA_ACCESS_TOKEN="${{ secrets.DETA_ACCESS_TOKEN }}" ~/.deta/bin/deta clone --name ${{ secrets.DETA_NAME }} --project ${{ secrets.DETA_PROJECT }} tmp/
-        cp -r tmp/.deta .
-    - name: Deploy to Deta
-      shell: bash
-      run: |
-        export DETA_ACCESS_TOKEN=${{ secrets.DETA_ACCESS_TOKEN }}
-        echo "${{ secrets.DETA_ENV }}" > .env.deta
-        deta update -n ${{ secrets.DETA_NAME }} -e .env.deta
-        ~/.deta/bin/deta deploy
+      - uses: actions/checkout@v2
+      - uses: BogDAAAMN/deta-deploy-action@v1.0.1
+        with:
+          deta-access-token: ${{ secrets.DETA_ACCESS_TOKEN }}
+          deta-name: 'micro-name'
+          deta-project: 'project-name'
