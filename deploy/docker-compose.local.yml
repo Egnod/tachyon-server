@@ -24,8 +24,7 @@ services:
       TACHYON_DB_PASS: tachyon
       TACHYON_DB_BASE: tachyon
       TACHYON_REDIS_KEY: tachyon
-      TACHYON_REDIS_HOST: tachyon-redis
-      TACHYON_REDIS_PORT: 6379
+      TACHYON_REDIS_URI: "redis://tachyon-redis:6379"
       TACHYON_SERVER_CRYPTO_SECRET: "swimwear-blade-jaguar-upfront-ungloved-evidence-maestro-untied-onion-upgrade-ebook-syllable-jezebel-abhorrence-geyser-oven-jubilant-uptown-waving-easel-speakers-pseudo-auctioneer-reimburse-unwrinkled-unbuttoned-coverless-gamekeeper-knickers-editor-quarters-jingling"
 
   db:
@@ -76,8 +75,7 @@ services:
       TACHYON_DB_PASS: tachyon
       TACHYON_DB_BASE: tachyon
       TACHYON_REDIS_KEY: tachyon
-      TACHYON_REDIS_HOST: tachyon-redis
-      TACHYON_REDIS_PORT: 6379
+      TACHYON_REDIS_URI: "redis://tachyon-redis:6379"
       TACHYON_SERVER_CRYPTO_SECRET: "swimwear-blade-jaguar-upfront-ungloved-evidence-maestro-untied-onion-upgrade-ebook-syllable-jezebel-abhorrence-geyser-oven-jubilant-uptown-waving-easel-speakers-pseudo-auctioneer-reimburse-unwrinkled-unbuttoned-coverless-gamekeeper-knickers-editor-quarters-jingling"
     depends_on:
       db:

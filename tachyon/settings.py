@@ -24,11 +24,10 @@ class Settings(BaseSettings):
     db_base: str = "tachyon"
     db_echo: bool = False
 
-    redis_host: str = "redis"
     redis_key: str = CACHE_KEY
-    redis_port: int = 6379
+    redis_uri: str = Field(...)
 
-    server_crypto_secret: str = Field(str)
+    server_crypto_secret: str = Field(...)
 
     @property
     def db_url(self) -> URL:
@@ -44,21 +43,6 @@ class Settings(BaseSettings):
             user=self.db_user,
             password=self.db_pass,
             path=f"/{self.db_base}",
-        )
-
-    @property
-    def redis_uri(self) -> str:
-        """
-        Assemble redis URL from settings.
-
-        :return: database URL.
-        """
-        return str(
-            URL.build(
-                scheme="redis",
-                host=self.redis_host,
-                port=self.redis_port,
-            ),
         )
 
     @property

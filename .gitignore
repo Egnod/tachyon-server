@@ -141,3 +141,6 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 monkeytype.sqlite3
+tachyon/requirements.txt
+.deta
+tachyon/.env.deta
