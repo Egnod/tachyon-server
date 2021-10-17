@@ -7,6 +7,7 @@ from tortoise.contrib.fastapi import register_tortoise
 
 from tachyon import __version__
 from tachyon.db.config import TORTOISE_CONFIG
+from tachyon.web.api import root
 from tachyon.web.api.router import api_router
 from tachyon.web.exceptions import add_exception_handlers
 from tachyon.web.lifetime import shutdown, startup
@@ -43,6 +44,7 @@ def get_app() -> FastAPI:
         StaticFiles(directory=APP_ROOT / "static"),
         name="static",
     )
+    app.include_router(router=root.router)
 
     register_tortoise(app, config=TORTOISE_CONFIG, add_exception_handlers=True)
 
