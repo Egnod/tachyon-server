@@ -1,4 +1,3 @@
-from importlib import metadata
 from pathlib import Path
 
 from fastapi import FastAPI
@@ -6,6 +5,7 @@ from fastapi.responses import UJSONResponse
 from fastapi.staticfiles import StaticFiles
 from tortoise.contrib.fastapi import register_tortoise
 
+from tachyon import __version__
 from tachyon.db.config import TORTOISE_CONFIG
 from tachyon.web.api.router import api_router
 from tachyon.web.exceptions import add_exception_handlers
@@ -25,7 +25,7 @@ def get_app() -> FastAPI:
     app = FastAPI(
         title="tachyon",
         description="Crypto notes with many settings and templates!",
-        version=metadata.version("tachyon"),
+        version=__version__,
         docs_url="/api/docs/",
         redoc_url=None,
         openapi_url="/api/openapi.json",

@@ -25,9 +25,9 @@ class Settings(BaseSettings):
     db_echo: bool = False
 
     redis_key: str = CACHE_KEY
-    redis_uri: str = Field(...)
+    redis_uri: str = Field(default="redis://tachyon-redis:6379")
 
-    server_crypto_secret: str = Field(...)
+    server_crypto_secret: str = Field(default="super_secret")
 
     @property
     def db_url(self) -> URL:
