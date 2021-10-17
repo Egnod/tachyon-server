@@ -24,8 +24,7 @@ jobs:
     - name: Clone Deta Metadata
       shell: bash
       run: |
-        export DETA_ACCESS_TOKEN=${{ secrets.DETA_ACCESS_TOKEN }}
-        ~/.deta/bin/deta clone --name ${{ secrets.DETA_NAME }} --project ${{ secrets.DETA_PROJECT }} tmp/
+        env DETA_ACCESS_TOKEN="${{ secrets.DETA_ACCESS_TOKEN }}" ~/.deta/bin/deta clone --name ${{ secrets.DETA_NAME }} --project ${{ secrets.DETA_PROJECT }} tmp/
         cp -r tmp/.deta .
     - name: Deploy to Deta
       shell: bash
