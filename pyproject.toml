@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tachyon"
-version = "0.2.0"
+version = "0.3.0"
 description = "Crypto notes with many settings and templates!"
 authors = ["Alexander Lavrov <internal@egnod.dev>"]
 maintainers = [
