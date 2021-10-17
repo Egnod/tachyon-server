@@ -21,12 +21,17 @@ jobs:
         curl -fsSL https://get.deta.dev/cli.sh | sh
     - name: Clone Deta Metadata
       shell: bash
+      env:
+        DETA_ACCESS_TOKEN: ${{ secrets.DETA_ENV }}
       run: |
-        env DETA_ACCESS_TOKEN="${{ secrets.DETA_ACCESS_TOKEN }}" ~/.deta/bin/deta clone --name ${{ secrets.DETA_NAME }} --project ${{ secrets.DETA_PROJECT }} tmp/
+        ~/.deta/bin/deta clone --name tachyon --project tachyon tmp/
         cp -r tmp/.deta .
     - name: Deploy to Deta
       shell: bash
+      env:
+        DETA_ACCESS_TOKEN: ${{ secrets.DETA_ENV }}
+        DETA_ENV: ${{ secrets.DETA_ENV }}
       run: |
-        echo "${{ secrets.DETA_ENV }}" > .env.deta
-        env DETA_ACCESS_TOKEN="${{ secrets.DETA_ACCESS_TOKEN }}" deta update -n ${{ secrets.DETA_NAME }} -e .env.deta
-        env DETA_ACCESS_TOKEN="${{ secrets.DETA_ACCESS_TOKEN }}" ~/.deta/bin/deta deploy
+        echo "$DETA_ENV" > .env.deta
+        ~/.deta/bin/deta update -n tachyon -e .env.deta
+        ~/.deta/bin/deta deploy
