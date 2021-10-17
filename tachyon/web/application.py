@@ -1,0 +1,49 @@
+from importlib import metadata
+from pathlib import Path
+
+from fastapi import FastAPI
+from fastapi.responses import UJSONResponse
+from fastapi.staticfiles import StaticFiles
+from tortoise.contrib.fastapi import register_tortoise
+
+from tachyon.db.config import TORTOISE_CONFIG
+from tachyon.web.api.router import api_router
+from tachyon.web.exceptions import add_exception_handlers
+from tachyon.web.lifetime import shutdown, startup
+
+APP_ROOT = Path(__file__).parent.parent
+
+
+def get_app() -> FastAPI:
+    """
+    Get FastAPI application.
+
+    This is the main constructor of an application.
+
+    :return: application.
+    """
+    app = FastAPI(
+        title="tachyon",
+        description="Crypto notes with many settings and templates!",
+        version=metadata.version("tachyon"),
+        docs_url="/api/docs/",
+        redoc_url=None,
+        openapi_url="/api/openapi.json",
+        default_response_class=UJSONResponse,
+    )
+
+    app.on_event("startup")(startup(app))
+    app.on_event("shutdown")(shutdown(app))
+
+    add_exception_handlers(app)
+
+    app.include_router(router=api_router, prefix="/api")
+    app.mount(
+        "/static",
+        StaticFiles(directory=APP_ROOT / "static"),
+        name="static",
+    )
+
+    register_tortoise(app, config=TORTOISE_CONFIG, add_exception_handlers=True)
+
+    return app

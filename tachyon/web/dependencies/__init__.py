@@ -1,0 +1,1 @@
+"""Web dependencies for endpoints."""
