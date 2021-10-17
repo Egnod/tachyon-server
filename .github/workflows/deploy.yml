@@ -31,5 +31,6 @@ jobs:
       shell: bash
       run: |
         export DETA_ACCESS_TOKEN=${{ secrets.DETA_ACCESS_TOKEN }}
-        cd ${{ inputs.deta-project-dir }}
+        echo "${{ secrets.DETA_ENV }}" > .env.deta
+        deta update -n ${{ secrets.DETA_NAME }} -e .env.deta
         ~/.deta/bin/deta deploy
