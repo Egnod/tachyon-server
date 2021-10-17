@@ -2,6 +2,7 @@ version: '3.7'
 
 services:
   api:
+    user: "1000:1000"
     build:
       context: .
       dockerfile: ./deploy/local.dockerfile
@@ -59,6 +60,7 @@ services:
     - REDIS_REPLICATION_MODE=master
 
   migrator:
+    user: "1000:1000"
     build:
       context: .
       dockerfile: ./deploy/local.dockerfile
