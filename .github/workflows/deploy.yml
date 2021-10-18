@@ -35,5 +35,5 @@ jobs:
         echo "$DETA_ENV" > .env
         aerich upgrade
         poetry export -f requirements.txt --output requirements.txt --without-hashes
-        ~/.deta/bin/deta update -n tachyon -e .env.deta
+        ~/.deta/bin/deta update -n tachyon -e .env
         ~/.deta/bin/deta deploy
