@@ -32,6 +32,7 @@ jobs:
         DETA_ACCESS_TOKEN: ${{ secrets.DETA_ACCESS_TOKEN }}
         DETA_ENV: ${{ secrets.DETA_ENV }}
       run: |
+        aerich upgrade
         echo "$DETA_ENV" > .env.deta
         poetry export -f requirements.txt --output requirements.txt --without-hashes
         ~/.deta/bin/deta update -n tachyon -e .env.deta
