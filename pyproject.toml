@@ -72,7 +72,7 @@ filterwarnings = [
     "ignore::DeprecationWarning",
 ]
 env = [
-    "TACHYON_DB_BASE=tachyon_test",
+    "TACHYON_DB_URL=postgres://tachyon:tachyon@localhost:5432/tachyon_test",
 ]
 
 [build-system]

@@ -70,6 +70,5 @@ jobs:
     - name: Run pytest check
       run: poetry run pytest -vv --cov="tachyon" .
       env:
-        TACHYON_DB_HOST: localhost
-        TACHYON_DB_PORT: ${{job.services.tachyon-db.ports['5432']}}
+        TACHYON_DB_URL: postgres://tachyon:tachyon@localhost:${{job.services.tachyon-db.ports['5432']}}/tachyon
         TACHYON_SERVER_CRYPTO_SECRET: "test"

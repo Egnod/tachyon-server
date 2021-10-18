@@ -4,7 +4,6 @@ from typing import Optional
 
 from fastapi_cache.backends.redis import CACHE_KEY
 from pydantic import BaseSettings, Field
-from yarl import URL
 
 TEMP_DIR = Path(gettempdir())
 
@@ -18,11 +17,7 @@ class Settings(BaseSettings):
     workers_count: int = 1
     # Enable uvicorn reloading
     reload: bool = False
-    db_host: str = "localhost"
-    db_port: int = 5432
-    db_user: str = "tachyon"
-    db_pass: str = "tachyon"
-    db_base: str = "tachyon"
+    db_url: str = "postgres://tachyon:tachyon@localhost:5432/tachyon"
     db_echo: bool = False
 
     redis_key: str = CACHE_KEY
@@ -31,22 +26,6 @@ class Settings(BaseSettings):
     server_crypto_secret: str = Field(default="super_secret")
 
     sentry_dsn: Optional[str] = None
-
-    @property
-    def db_url(self) -> URL:
-        """
-        Assemble database URL from settings.
-
-        :return: database URL.
-        """
-        return URL.build(
-            scheme="postgres",
-            host=self.db_host,
-            port=self.db_port,
-            user=self.db_user,
-            password=self.db_pass,
-            path=f"/{self.db_base}",
-        )
 
     @property
     def crypto_secret(self) -> bytes:
