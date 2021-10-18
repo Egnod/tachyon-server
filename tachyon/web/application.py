@@ -3,6 +3,7 @@ from pathlib import Path
 from fastapi import FastAPI
 from fastapi.responses import UJSONResponse
 from fastapi.staticfiles import StaticFiles
+from starlette.middleware.cors import CORSMiddleware
 from tortoise.contrib.fastapi import register_tortoise
 
 from tachyon import __version__
@@ -31,6 +32,14 @@ def get_app() -> FastAPI:
         redoc_url=None,
         openapi_url="/api/openapi.json",
         default_response_class=UJSONResponse,
+    )
+
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
     )
 
     app.on_event("startup")(startup(app))
