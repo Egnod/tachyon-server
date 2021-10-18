@@ -1,5 +1,6 @@
 from pathlib import Path
 from tempfile import gettempdir
+from typing import Optional
 
 from fastapi_cache.backends.redis import CACHE_KEY
 from pydantic import BaseSettings, Field
@@ -28,6 +29,8 @@ class Settings(BaseSettings):
     redis_uri: str = Field(default="redis://tachyon-redis:6379")
 
     server_crypto_secret: str = Field(default="super_secret")
+
+    sentry_dsn: Optional[str] = None
 
     @property
     def db_url(self) -> URL:

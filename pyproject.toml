@@ -28,6 +28,7 @@ argon2-cffi = "^21.1.0"
 cryptography = "^35.0.0"
 cbor2 = "^5.4.2"
 python-rapidjson = "^1.5"
+sentry-sdk = "^1.4.3"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.0"

@@ -12,6 +12,7 @@ from tachyon.web.api import root
 from tachyon.web.api.router import api_router
 from tachyon.web.exceptions import add_exception_handlers
 from tachyon.web.lifetime import shutdown, startup
+from tachyon.web.utils.sentry import sentry_init
 
 APP_ROOT = Path(__file__).parent.parent
 
@@ -56,5 +57,7 @@ def get_app() -> FastAPI:
     app.include_router(router=root.router)
 
     register_tortoise(app, config=TORTOISE_CONFIG, add_exception_handlers=True)
+
+    sentry_init(app)
 
     return app
