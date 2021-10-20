@@ -45,7 +45,7 @@ async def test_we_creation(
 
     assert instance.name == test_name
     assert instance.max_number_visits == test_max_number_visits
-    assert instance.text == test_text.encode() == message.encode()
+    assert instance.get_text() == test_text == message
 
     with pytest.raises(NoteDAONotFound):
         await dao.read(sign=sign)
@@ -72,8 +72,8 @@ async def test_we_creation(
     instance, message = await dao.read(sign=sign)
 
     assert instance.name == test_name
-    assert instance.max_number_visits is None
-    assert instance.text == test_text.encode() == message.encode()
+    assert instance.max_number_visits == 0
+    assert instance.get_text() == test_text == message
 
     with pytest.raises(NoteDAOSignError):
         await dao.read(sign="123")
@@ -114,7 +114,7 @@ async def test_creation(
     instance, message = await dao.read(sign=sign)
 
     assert instance.name == test_name
-    assert instance.text == test_text.encode() == message.encode()
+    assert instance.get_text() == test_text == message
     assert instance.encrypt_password_hash is None
 
     # with password and is_encrypted=true

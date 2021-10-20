@@ -1,16 +1,12 @@
 import asyncio
 import sys
-from asyncio.events import AbstractEventLoop
 from typing import Generator
 
 import nest_asyncio
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from tortoise.contrib.test import finalizer, initializer
 
-from tachyon.db.config import MODELS_MODULES
-from tachyon.settings import settings
 from tachyon.web.application import get_app
 
 nest_asyncio.apply()
@@ -33,29 +29,9 @@ def event_loop() -> Generator[asyncio.AbstractEventLoop, None, None]:
         # https://github.com/encode/httpx/issues/914
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
-    loop = asyncio.new_event_loop()
+    loop = asyncio.get_event_loop()
     yield loop
     loop.close()
-
-
-@pytest.fixture(autouse=True)
-def initialize_db(event_loop: AbstractEventLoop) -> Generator[None, None, None]:
-    """
-    Initialize models and database.
-
-    :param event_loop: Session-wide event loop.
-    :yields: Nothing.
-    """
-    initializer(
-        MODELS_MODULES,
-        db_url=str(settings.db_url),
-        app_label="models",
-        loop=event_loop,
-    )
-
-    yield
-
-    finalizer()
 
 
 @pytest.fixture()

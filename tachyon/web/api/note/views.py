@@ -4,7 +4,7 @@ from fastapi import APIRouter
 from fastapi.param_functions import Depends, Path, Query
 
 from tachyon.db.dao.note_dao import NoteDAO
-from tachyon.web.api.note.schema import (
+from tachyon.web.api.note.schemas import (
     NoteCreateRequest,
     NoteCreateResponse,
     NoteReadResponse,

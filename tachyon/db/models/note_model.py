@@ -1,7 +1,8 @@
+import base64
 from enum import Enum
-from typing import Any, Dict
+from typing import Any, Dict, Optional, Union
 
-from tortoise import fields, models
+from pydantic import BaseModel, Field
 
 from tachyon.db.utils import cbor
 
@@ -12,43 +13,55 @@ class NoteContentType(str, Enum):  # noqa: WPS600
     text = "text"
 
 
-class NoteModel(models.Model):
+class NoteModel(BaseModel):
     """Model for notes purpose."""
 
-    id = fields.IntField(pk=True)
-    sign = fields.CharField(max_length=255, unique=True)  # noqa: WPS432
+    key: Optional[str] = Field(default=None)
 
-    name = fields.CharField(max_length=200)  # noqa: WPS432
-    content_type = fields.CharEnumField(NoteContentType, max_length=200)  # noqa: WPS432
+    sign: str = Field(...)
 
-    max_number_visits = fields.IntField(default=None, null=True)
-    current_number_visits = fields.IntField(default=0)  # : WPS432
+    name: str = Field(...)
+    content_type: NoteContentType = Field(default=NoteContentType.text)
 
-    is_encrypted = fields.BooleanField(default=False)
-    encrypt_password_hash = fields.TextField(default=None, null=True)
-    _encrypt_metadata = fields.BinaryField(
-        source_field="encrypt_metadata",
-        null=True,
-        default=None,
-    )
+    max_number_visits: int = Field(default=0, ge=0)
+    current_number_visits: int = Field(default=0, ge=0)
 
-    text = fields.BinaryField()
+    is_encrypted: bool = Field(default=False)
+    encrypt_password_hash: Optional[str] = Field(default=None)
 
-    @property
-    def encrypt_metadata(self) -> Dict[str, Any]:
+    encrypt_metadata: Optional[str] = Field(default=None)
+
+    text: str = Field(default="")
+
+    def get_text(self, decode: bool = True) -> Union[str, bytes]:
+        """Text from b85 format.
+
+        :param decode: decode to utf-8 or not
+        :return: text
+        """
+        return (
+            base64.b85decode(self.text).decode()
+            if decode
+            else base64.b85decode(self.text)
+        )
+
+    def set_text(self, value: bytes) -> None:
+        """Text to b85 format.
+
+        :param value: text for b85 encode
+        """
+        self.text = base64.b85encode(value).decode()  # noqa: WPS601
+
+    def get_encrypt_metadata(self) -> Dict[str, Any]:
         """Encryption data from cbor format.
 
         :return: dict of metadata
         """
-        return cbor.loads(self._encrypt_metadata)
+        return cbor.loads(self.encrypt_metadata)
 
-    @encrypt_metadata.setter
-    def encrypt_metadata(self, value: Any) -> None:
+    def set_encrypt_metadata(self, value: Any) -> None:
         """Encryption data to cbor format.
 
         :param value: encryption metadata for cbor encode
         """
-        self._encrypt_metadata = cbor.dumps(value)  # noqa: WPS601
-
-    def __str__(self) -> str:
-        return self.name
+        self.encrypt_metadata = cbor.dumps(value)  # noqa: WPS601

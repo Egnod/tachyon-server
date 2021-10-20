@@ -2,7 +2,6 @@ from pathlib import Path
 from tempfile import gettempdir
 from typing import Optional
 
-from fastapi_cache.backends.redis import CACHE_KEY
 from pydantic import BaseSettings, Field
 
 TEMP_DIR = Path(gettempdir())
@@ -17,13 +16,12 @@ class Settings(BaseSettings):
     workers_count: int = 1
     # Enable uvicorn reloading
     reload: bool = False
-    db_url: str = "postgres://tachyon:tachyon@localhost:5432/tachyon"
-    db_echo: bool = False
 
-    redis_key: str = CACHE_KEY
-    redis_uri: str = Field(default="redis://tachyon-redis:6379")
+    deta_key: str = Field(...)
 
     server_crypto_secret: str = Field(default="super_secret")
+
+    notes_base: str = Field(default="notes")
 
     sentry_dsn: Optional[str] = None
 

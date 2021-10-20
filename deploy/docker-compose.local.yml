@@ -11,71 +11,10 @@ services:
     restart: always
     env_file:
     - .env
-    depends_on:
-    - redis
-    - db
     ports:
     - "8081:8000"
     environment:
+      # TACHYON_DETA_KEY:
+      TACHYON_RELOAD: true
       TACHYON_HOST: 0.0.0.0
-      TACHYON_DB_URL: postgres://tachyon:tachyon@tachyon-db:5432/tachyon
-      TACHYON_REDIS_KEY: tachyon
-      TACHYON_REDIS_URI: "redis://tachyon-redis:6379"
       TACHYON_SERVER_CRYPTO_SECRET: "swimwear-blade-jaguar-upfront-ungloved-evidence-maestro-untied-onion-upgrade-ebook-syllable-jezebel-abhorrence-geyser-oven-jubilant-uptown-waving-easel-speakers-pseudo-auctioneer-reimburse-unwrinkled-unbuttoned-coverless-gamekeeper-knickers-editor-quarters-jingling"
-
-  db:
-    image: postgres:13.4-buster
-    hostname: tachyon-db
-    environment:
-      POSTGRES_PASSWORD: "tachyon"
-      POSTGRES_USER: "tachyon"
-      POSTGRES_DB: "tachyon"
-    volumes:
-    - tachyon-db-data:/var/lib/postgresql/data
-    restart: always
-    ports:
-    - "5432:5432"
-    healthcheck:
-      test:
-      - CMD
-      - pg_isready
-      - -U
-      - tachyon
-      interval: 2s
-      timeout: 3s
-      retries: 40
-
-  redis:
-    image: "redis:alpine"
-    hostname: tachyon-redis
-    command: redis-server
-    volumes:
-    - tachyon-cache-data:/var/lib/redis
-    environment:
-    - REDIS_REPLICATION_MODE=master
-
-  migrator:
-    user: "1000:1000"
-    build:
-      context: .
-      dockerfile: ./deploy/local.dockerfile
-    volumes:
-    - ./:/app/
-    restart: "no"
-    command: bash -c "aerich migrate && aerich upgrade"
-    environment:
-      TACHYON_HOST: 0.0.0.0
-      TACHYON_DB_URL: postgres://tachyon:tachyon@tachyon-db:5432/tachyon
-      TACHYON_REDIS_KEY: tachyon
-      TACHYON_REDIS_URI: "redis://tachyon-redis:6379"
-      TACHYON_SERVER_CRYPTO_SECRET: "swimwear-blade-jaguar-upfront-ungloved-evidence-maestro-untied-onion-upgrade-ebook-syllable-jezebel-abhorrence-geyser-oven-jubilant-uptown-waving-easel-speakers-pseudo-auctioneer-reimburse-unwrinkled-unbuttoned-coverless-gamekeeper-knickers-editor-quarters-jingling"
-    depends_on:
-      db:
-        condition: service_healthy
-
-volumes:
-  tachyon-db-data:
-    name: tachyon-db-data
-
-  tachyon-cache-data:
-    name: tachyon-cache-data

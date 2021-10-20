@@ -4,14 +4,11 @@ from fastapi import FastAPI
 from fastapi.responses import UJSONResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
-from tortoise.contrib.fastapi import register_tortoise
 
 from tachyon import __version__
-from tachyon.db.config import TORTOISE_CONFIG
 from tachyon.web.api import root
 from tachyon.web.api.router import api_router
 from tachyon.web.exceptions import add_exception_handlers
-from tachyon.web.lifetime import shutdown, startup
 from tachyon.web.utils.sentry import sentry_init
 
 APP_ROOT = Path(__file__).parent.parent
@@ -43,9 +40,6 @@ def get_app() -> FastAPI:
         allow_headers=["*"],
     )
 
-    app.on_event("startup")(startup(app))
-    app.on_event("shutdown")(shutdown(app))
-
     add_exception_handlers(app)
 
     app.include_router(router=api_router, prefix="/api")
@@ -55,8 +49,6 @@ def get_app() -> FastAPI:
         name="static",
     )
     app.include_router(router=root.router)
-
-    register_tortoise(app, config=TORTOISE_CONFIG, add_exception_handlers=True)
 
     sentry_init(app)
 

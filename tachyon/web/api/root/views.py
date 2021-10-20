@@ -10,7 +10,7 @@ router = APIRouter()
 
 
 @router.get("/", response_model=RootCheckResponse)
-def root_check() -> RootCheckResponse:
+async def root_check() -> RootCheckResponse:
     """
     Checks the root info of a project.
 
