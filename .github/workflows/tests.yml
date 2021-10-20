@@ -72,3 +72,4 @@ jobs:
       env:
         TACHYON_DB_URL: postgres://tachyon:tachyon@localhost:${{job.services.tachyon-db.ports['5432']}}/tachyon
         TACHYON_SERVER_CRYPTO_SECRET: "test"
+        TACHYON_DETA_KEY: ${{ secrets.DETA_ACCESS_TOKEN }}
