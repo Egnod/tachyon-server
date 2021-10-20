@@ -47,16 +47,6 @@ jobs:
       run: poetry run mypy .
   pytest:
     runs-on: ubuntu-latest
-    services:
-      tachyon-db:
-        image: postgres:13.4-buster
-        env:
-          POSTGRES_PASSWORD: tachyon
-          POSTGRES_USER: tachyon
-          POSTGRES_DB: tachyon
-        options: --health-cmd="pg_isready" --health-interval=10s --health-timeout=5s --health-retries=5
-        ports:
-        - 5432
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python
@@ -70,6 +60,5 @@ jobs:
     - name: Run pytest check
       run: poetry run pytest -vv --cov="tachyon" .
       env:
-        TACHYON_DB_URL: postgres://tachyon:tachyon@localhost:${{job.services.tachyon-db.ports['5432']}}/tachyon
         TACHYON_SERVER_CRYPTO_SECRET: "test"
-        TACHYON_DETA_KEY: ${{ secrets.DETA_ACCESS_TOKEN }}
+        TACHYON_DETA_KEY: ${{ secrets.DETA_PROJECT_KEY }}
