@@ -10,6 +10,8 @@ TEMP_DIR = Path(gettempdir())
 class Settings(BaseSettings):
     """Application settings."""
 
+    cloudant_service_name: str = "TACHYON_DB"
+
     host: str = "127.0.0.1"
     port: int = 8000
     # quantity of workers for uvicorn
@@ -17,13 +19,12 @@ class Settings(BaseSettings):
     # Enable uvicorn reloading
     reload: bool = False
 
-    deta_key: str = Field(...)
-
     server_crypto_secret: str = Field(default="super_secret")
 
     notes_base: str = Field(default="notes")
 
     sentry_dsn: Optional[str] = None
+    sentry_env: str = "develop"
 
     @property
     def crypto_secret(self) -> bytes:

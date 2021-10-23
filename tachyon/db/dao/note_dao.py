@@ -1,10 +1,12 @@
+import re
 import secrets
 from http import HTTPStatus
 from typing import Optional, Tuple
 
+from ibmcloudant.cloudant_v1 import Document
 from passlib.hash import argon2
 
-from tachyon.db.config import notes
+from tachyon.db.dao.base_dao import BaseDAO
 from tachyon.db.models.note_model import NoteContentType, NoteModel
 from tachyon.exceptions.dao.note import (
     NoteDAOEncryptPasswordError,
@@ -13,15 +15,16 @@ from tachyon.exceptions.dao.note import (
     NoteDAOSignError,
 )
 from tachyon.services.ciphers.chacha20poly1305 import ChaCha20Poly1305
+from tachyon.settings import settings
 
 
-class NoteDAO:
+class NoteDAO(BaseDAO):
     """Class for accessing note table."""
-
-    _base = notes
 
     SIGN_LENGTH = 43
     SIGN_BYTES_LENGTH = 32
+
+    _base_name = settings.notes_base
 
     async def create(
         self,
@@ -48,7 +51,6 @@ class NoteDAO:
             "content_type": content_type,
             "max_number_visits": max_number_visits,
             "is_encrypted": is_encrypted,
-            "sign": await self._generate_sign(),
         }
 
         note = NoteModel(**note_creation_params)
@@ -68,9 +70,14 @@ class NoteDAO:
             note.set_text(cipher.encrypt(text))
             note.set_encrypt_metadata(cipher.metadata)
 
-        await self._base.put(note.dict(exclude={"key"}))
+        note = note.dict(exclude={"key"})
+        note["sign"] = await self._generate_sign()
 
-        return note_creation_params["sign"]
+        note = Document(id=note["sign"], **note)
+
+        self._client.put_document(db=self._base_name, doc_id=note.id, document=note)
+
+        return note.sign
 
     async def read(
         self,
@@ -93,13 +100,17 @@ class NoteDAO:
             )
 
         note = next(
-            iter((await self._base.fetch({"sign": sign})).items),
+            iter(
+                (self._client.post_find(self._base_name, {"sign": sign})).get_result()[
+                    "docs"
+                ],
+            ),
             None,
         )  # : WPS221
 
         if not note:
             raise NoteDAONotFound(
-                "Note not found!",
+                message="Note not found!",
                 http_code=HTTPStatus.NOT_FOUND,
             )
 
@@ -127,25 +138,38 @@ class NoteDAO:
 
         note.current_number_visits += 1
 
-        await self._base.update(
-            {"current_number_visits": note.current_number_visits},
-            note.key,
-        )
+        updated_note = note.dict(by_alias=True)
+
+        updated_note = self._client.post_document(
+            db=self._base_name,
+            document=updated_note,
+        ).get_result()
 
         if note.max_number_visits:
             if note.current_number_visits >= note.max_number_visits:
-                await self._base.delete(note.key)
+                self._client.delete_document(
+                    db=self._base_name,
+                    doc_id=updated_note["id"],
+                    rev=updated_note["rev"],
+                )
 
         return note, message_data
 
-    @classmethod
-    async def _generate_sign(cls) -> str:
+    async def _generate_sign(self) -> str:
         generated_sign = None
 
         while not generated_sign:
-            sign = secrets.token_urlsafe(cls.SIGN_BYTES_LENGTH)
+            sign = secrets.token_urlsafe(self.SIGN_BYTES_LENGTH)
 
-            if not (await cls._base.fetch(limit=None, query={"sign": sign})).count:
+            if (
+                re.match("^[^_].*", sign)
+                and not self._client.post_find(
+                    db=self._base_name,
+                    selector={"sign": {"$eq": sign}},
+                    fields=["_id"],
+                    limit=1,
+                ).get_result()["docs"]
+            ):
                 generated_sign = sign
 
         return generated_sign

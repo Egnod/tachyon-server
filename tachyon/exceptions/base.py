@@ -16,3 +16,11 @@ class BaseTachyonException(Exception):
 
     def __str__(self) -> str:
         return self.message or str(self)
+
+    @property
+    def code(self) -> int:
+        """Alias for http code attribute (compat. with ibm-cloudant ApiException).
+
+        :return: http code
+        """
+        return self.http_code

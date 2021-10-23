@@ -16,9 +16,9 @@ class NoteContentType(str, Enum):  # noqa: WPS600
 class NoteModel(BaseModel):
     """Model for notes purpose."""
 
-    key: Optional[str] = Field(default=None)
+    key: Optional[str] = Field(default=None, alias="_id")
 
-    sign: str = Field(...)
+    sign: Optional[str] = Field(default=None)
 
     name: str = Field(...)
     content_type: NoteContentType = Field(default=NoteContentType.text)
@@ -65,3 +65,7 @@ class NoteModel(BaseModel):
         :param value: encryption metadata for cbor encode
         """
         self.encrypt_metadata = cbor.dumps(value)  # noqa: WPS601
+
+    class Config:
+        allow_population_by_field_name = True
+        extra = "allow"

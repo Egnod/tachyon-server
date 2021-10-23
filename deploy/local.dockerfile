@@ -14,4 +14,4 @@ COPY ./pyproject.toml ./poetry.lock /app/
 
 RUN poetry install
 
-CMD ["/usr/local/bin/monkeytype", "run", "-m", "tachyon"]
+CMD ["/usr/local/bin/python3", "-m", "tachyon"]

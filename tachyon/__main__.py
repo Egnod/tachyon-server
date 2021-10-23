@@ -1,10 +1,12 @@
 import uvicorn
 
 from tachyon.settings import settings
+from tachyon.web.application import get_app
+
+app = get_app()
 
 
-def main() -> None:
-    """Entrypoint of the application."""
+if __name__ == "__main__":
     uvicorn.run(
         "tachyon.web.application:get_app",
         workers=settings.workers_count,
@@ -13,7 +15,3 @@ def main() -> None:
         reload=settings.reload,
         factory=True,
     )
-
-
-if __name__ == "__main__":
-    main()

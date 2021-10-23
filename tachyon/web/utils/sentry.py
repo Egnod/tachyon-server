@@ -1,16 +1,16 @@
+import logging
+
 import sentry_sdk
-from fastapi import FastAPI
-from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
+from sentry_sdk.integrations.logging import LoggingIntegration
 
 from tachyon.settings import settings
 
 
-def sentry_init(app: FastAPI) -> None:
-    """Add sentry middleware to app if dsn exists.
-
-    :param app: fastapi app
-    """
+def sentry_init() -> None:
+    """Add sentry middleware to app if dsn exists."""
     if settings.sentry_dsn:
-        sentry_sdk.init(dsn=settings.sentry_dsn)
-
-        app.add_middleware(SentryAsgiMiddleware)
+        LoggingIntegration(
+            level=logging.INFO,  # Capture info and above as breadcrumbs
+            event_level=logging.ERROR,  # Send errors as events
+        )
+        sentry_sdk.init(settings.sentry_dsn, environment=settings.sentry_env)

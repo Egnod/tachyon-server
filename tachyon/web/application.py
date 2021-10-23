@@ -22,6 +22,8 @@ def get_app() -> FastAPI:
 
     :return: application.
     """
+    sentry_init()
+
     app = FastAPI(
         title="tachyon",
         description="Crypto notes with many settings and templates!",
@@ -49,7 +51,4 @@ def get_app() -> FastAPI:
         name="static",
     )
     app.include_router(router=root.router)
-
-    sentry_init(app)
-
     return app

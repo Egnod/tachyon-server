@@ -144,3 +144,5 @@ monkeytype.sqlite3
 .deta
 .env.deta
 requirements.txt
+
+.vercel

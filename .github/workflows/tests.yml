@@ -47,6 +47,13 @@ jobs:
       run: poetry run mypy .
   pytest:
     runs-on: ubuntu-latest
+    services:
+      couchdb:
+        image: bitnami/couchdb:latest
+        env:
+          COUCHDB_PASSWORD: "tachyon"
+        ports:
+        - 5984
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python
@@ -60,5 +67,10 @@ jobs:
     - name: Run pytest check
       run: poetry run pytest -vv --cov="tachyon" .
       env:
-        TACHYON_SERVER_CRYPTO_SECRET: "test"
-        TACHYON_DETA_KEY: ${{ secrets.DETA_PROJECT_KEY }}
+        TACHYON_DB_AUTH_TYPE: COUCHDB_SESSION
+        TACHYON_DB_URL: "http://admin:tachyon@localhost:${{job.services.couchdb.ports['5984']}}"
+        TACHYON_DB_USERNAME: "admin"
+        TACHYON_DB_PASSWORD: "tachyon"
+        TACHYON_RELOAD: true
+        TACHYON_HOST: 0.0.0.0
+        TACHYON_SERVER_CRYPTO_SECRET: "swimwear-blade-jaguar-upfront-ungloved-evidence-maestro-untied-onion-upgrade-ebook-syllable-jezebel-abhorrence-geyser-oven-jubilant-uptown-waving-easel-speakers-pseudo-auctioneer-reimburse-unwrinkled-unbuttoned-coverless-gamekeeper-knickers-editor-quarters-jingling"

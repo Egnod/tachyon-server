@@ -9,7 +9,7 @@ maintainers = [
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.6.15"
 fastapi = "^0.68.0"
 uvicorn = "^0.15.0"
 pydantic = {version = "^1.8.2", extras = ["dotenv"]}
@@ -21,12 +21,14 @@ async-exit-stack = "^1.0.1"
 async-generator = "^1.10"
 passlib = "^1.7.4"
 argon2-cffi = "^21.1.0"
-cryptography = "^35.0.0"
 cbor2 = "^5.4.2"
 python-rapidjson = "^1.5"
 sentry-sdk = "^1.4.3"
 deta = {version = "1.1.0a1", extras = ["async"]}
 typing-extensions = "^3.10.0"
+pycryptodomex = "^3.11.0"
+aiocontextvars = "^0.2.2"
+ibmcloudant = "^0.0.38"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.0"
@@ -68,9 +70,14 @@ addopts = "--cov=tachyon"
 filterwarnings = [
     "error",
     "ignore::DeprecationWarning",
+    "ignore::pytest.PytestUnraisableExceptionWarning",
 ]
 env = [
     "TACHYON_NOTES_BASE=notes_test",
+    "TACHYON_DB_AUTH_TYPE=COUCHDB_SESSION",
+    "TACHYON_DB_URL=http://admin:tachyon@127.0.0.1:5984",
+    "TACHYON_DB_USERNAME=admin",
+    "TACHYON_DB_PASSWORD=tachyon",
 ]
 
 [build-system]

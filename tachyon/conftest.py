@@ -1,12 +1,13 @@
 import asyncio
 import sys
-from typing import Generator
+from collections import Generator
 
 import nest_asyncio
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
+from tachyon.db.dao.note_dao import NoteDAO
 from tachyon.web.application import get_app
 
 nest_asyncio.apply()
@@ -17,10 +18,6 @@ def event_loop() -> Generator[asyncio.AbstractEventLoop, None, None]:
     """
     Create an instance of event loop for tests.
 
-    This hack is required in order to get `dbsession` fixture to work.
-    Because default fixture `event_loop` is function scoped,
-    but dbsession requires session scoped `event_loop` fixture.
-
     :yields: event loop.
     """
     python_version = sys.version_info[:2]
@@ -29,9 +26,26 @@ def event_loop() -> Generator[asyncio.AbstractEventLoop, None, None]:
         # https://github.com/encode/httpx/issues/914
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
-    loop = asyncio.get_event_loop()
+    loop = asyncio.new_event_loop()
     yield loop
     loop.close()
+
+
+@pytest.fixture(autouse=True)
+def notes_initialize_db(
+    event_loop: asyncio.AbstractEventLoop,
+) -> Generator[None, None, None]:
+    """
+    Initialize models and database.
+
+    :param event_loop: Session-wide event loop.
+    :yields: Nothing.
+    """
+    NoteDAO()._populate_db()  # noqa: WPS437
+
+    yield
+
+    NoteDAO()._delete_db()  # noqa: WPS437
 
 
 @pytest.fixture()
