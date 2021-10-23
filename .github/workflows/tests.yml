@@ -68,7 +68,7 @@ jobs:
       run: poetry run pytest -vv --cov="tachyon" .
       env:
         TACHYON_DB_AUTH_TYPE: COUCHDB_SESSION
-        TACHYON_DB_URL: "http://admin:tachyon@localhost:${{job.services.couchdb.ports['5984']}}"
+        TACHYON_DB_URL: "http://admin:tachyon@127.0.0.1:${{job.services.couchdb.ports['5984']}}"
         TACHYON_DB_USERNAME: "admin"
         TACHYON_DB_PASSWORD: "tachyon"
         TACHYON_RELOAD: true
