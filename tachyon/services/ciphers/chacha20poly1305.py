@@ -1,9 +1,10 @@
 import base64
 import secrets
-from hashlib import shake_256
 from typing import Dict, Optional, Union
 
-from Cryptodome.Cipher import ChaCha20_Poly1305
+import nacl.encoding
+import nacl.hash
+import nacl.secret
 
 from tachyon.settings import settings
 
@@ -11,7 +12,7 @@ from tachyon.settings import settings
 class ChaCha20Poly1305:
     """Interface for chacha20-poly1305."""
 
-    NONCE_LENGTH = 12
+    NONCE_LENGTH = 24
     KEY_LENGTH = 32
 
     def __init__(
@@ -30,12 +31,15 @@ class ChaCha20Poly1305:
         if isinstance(aad, str):
             aad = base64.b85decode(aad)
 
-        self._key = key or shake_256(password.encode()).digest(self.KEY_LENGTH)
+        self._key = key or nacl.hash.sha256(
+            password.encode(),
+            encoder=nacl.encoding.RawEncoder,
+        )
+
         self._nonce = nonce or secrets.token_bytes(self.NONCE_LENGTH)
         self._aad = aad or settings.crypto_secret
 
-        self._algorithm = ChaCha20_Poly1305.new(key=self._key, nonce=self._nonce)
-        self._algorithm.update(self._aad)
+        self._algorithm = nacl.secret.SecretBox(key=self._key)
 
     @property
     def metadata(self) -> Dict[str, str]:
@@ -56,7 +60,7 @@ class ChaCha20Poly1305:
         if isinstance(message_data, str):
             message_data = message_data.encode()
 
-        return self._algorithm.encrypt(message_data)
+        return self._algorithm.encrypt(message_data, self._nonce)
 
     def decrypt(self, message_data: Union[str, bytes]) -> bytes:
         """Decrypt string or bytes data.

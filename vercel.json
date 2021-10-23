@@ -1,8 +1,0 @@
-{
-  "builds": [
-    {"src": "/tachyon/__main__.py", "use": "@vercel/python"}
-  ],
-  "routes": [
-    {"src": "/(.*)", "dest": "tachyon/__main__.py"}
-  ]
-}

@@ -3,8 +3,9 @@ import secrets
 from http import HTTPStatus
 from typing import Optional, Tuple
 
+import nacl.exceptions
+import nacl.pwhash
 from ibmcloudant.cloudant_v1 import Document
-from passlib.hash import argon2
 
 from tachyon.db.dao.base_dao import BaseDAO
 from tachyon.db.models.note_model import NoteContentType, NoteModel
@@ -176,8 +177,11 @@ class NoteDAO(BaseDAO):
 
     @classmethod
     def _password_check(cls, password: str, password_hash: str) -> bool:
-        return argon2.verify(password, password_hash)
+        try:
+            return nacl.pwhash.verify(password_hash.encode(), password.encode())
+        except nacl.exceptions.InvalidkeyError:
+            return False
 
     @classmethod
     def _password_hash(cls, password: str) -> str:
-        return argon2.hash(password)
+        return nacl.pwhash.str(password.encode()).decode()

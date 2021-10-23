@@ -13,7 +13,7 @@ from tachyon.web.api.note.schemas import (
 router = APIRouter()
 
 
-@router.get("/{sign}", response_model=NoteReadResponse)
+@router.get("/{sign}/", response_model=NoteReadResponse)
 async def read_note(
     sign: str = Path(...),
     password: Optional[str] = Query(default=None),
