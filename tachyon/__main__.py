@@ -5,7 +5,6 @@ from tachyon.web.application import get_app
 
 app = get_app()
 
-
 if __name__ == "__main__":
     uvicorn.run(
         "tachyon.web.application:get_app",
