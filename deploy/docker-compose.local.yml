@@ -1,29 +1,6 @@
 version: '3.7'
 
 services:
-  api:
-    user: "1000:1000"
-    build:
-      context: .
-      dockerfile: ./deploy/local.dockerfile
-    volumes:
-    - ./:/app/
-    restart: always
-    depends_on:
-    - couchdb
-    env_file:
-    - .env
-    ports:
-    - "8081:8000"
-    environment:
-      TACHYON_DB_AUTH_TYPE: COUCHDB_SESSION
-      TACHYON_DB_URL: "http://admin:tachyon@couchdb:5984"
-      TACHYON_DB_USERNAME: "admin"
-      TACHYON_DB_PASSWORD: "tachyon"
-      TACHYON_RELOAD: true
-      TACHYON_HOST: 0.0.0.0
-      TACHYON_SERVER_CRYPTO_SECRET: "swimwear-blade-jaguar-upfront-ungloved-evidence-maestro-untied-onion-upgrade-ebook-syllable-jezebel-abhorrence-geyser-oven-jubilant-uptown-waving-easel-speakers-pseudo-auctioneer-reimburse-unwrinkled-unbuttoned-coverless-gamekeeper-knickers-editor-quarters-jingling"
-
   couchdb:
     image: bitnami/couchdb:latest
     environment:

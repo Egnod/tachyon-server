@@ -1,1 +1,0 @@
-"""Ciphers for note create."""
